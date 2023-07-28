@@ -1,24 +1,31 @@
 # 导入模块
 import os
 
+import yaml
+
 import docx
 
 rep = {}
 def checkD():
     while True:
-        order=input("按1开始替换\n按2删除替换词\n按任意键添加替换词")
+        print("-------执行关键词管理-------")
+        order=input("按1开始替换\n按2删除替换词\n按任意键添加替换词\n输入:")
         if order=="1":
             print("当前替换任务词典:"+str(rep))
             break
         if order=="2":
-            delW=input("输入要删除的替换词(原词)")
+            delW=input("输入要删除的替换词(原词):")
             rep.pop(delW)
             print("当前替换任务词典:" + str(rep))
+            with open("replace.yaml", 'w', encoding="utf-8") as file:
+                yaml.dump(rep, file, allow_unicode=True)
             break
         else:
             a=input("替换:")
             b=input("替换为:")
             rep[a]=b
+            with open("replace.yaml", 'w', encoding="utf-8") as file:
+                yaml.dump(rep, file, allow_unicode=True)
         print("----------------")
 
 def main1():
@@ -32,7 +39,7 @@ def main1():
         print("开始替换")
         print("当前文件:"+i)
         print("当前替换任务词典:" + str(rep))
-        sa=input("按1进入关键词增加/删除\n按任意键开始替换")
+        sa=input("按1进入关键词增加/删除\n按任意键开始替换\n输入：")
         if sa=="1":
             checkD()
         doc = docx.Document("docx/"+i)
@@ -66,7 +73,21 @@ if __name__ == '__main__':
         print("ok")
     else:
         os.mkdir("newDocx")
+    if os.path.exists("replace.yaml"):
+        print("检查是否存在本地替换词库.....")
+        print("ok")
+    else:
+        print("初始化替换词......")
+        rep["芝士初始化替换关键词11111"]="该不会真能替换到东西吧"
+        with open("replace.yaml", 'w', encoding="utf-8") as file:
+            yaml.dump(rep, file, allow_unicode=True)
+
+    with open("replace.yaml", 'r', encoding='utf-8') as f:
+        result = yaml.load(f.read(), Loader=yaml.FullLoader)
+    rep=result
+    print("读取到本地替换字典:"+str(rep))
     print("欢迎使用本程序，请将源文件放在docx文件夹下")
     input("按任意键继续")
     print("////////////////////")
     main1()
+    input("程序执行完成，按任意键退出")
